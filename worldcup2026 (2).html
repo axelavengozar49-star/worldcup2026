@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Coupe du Monde 2026 – Phase Éliminatoire</title>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0CF7A;
+    --dark: #0D0F14;
+    --surface: #161A23;
+    --card: #1E2330;
+    --card-hover: #252C3E;
+    --border: #2A3045;
+    --text: #E8ECF5;
+    --muted: #7A8499;
+    --green: #2ECC71;
+    --red: #E74C3C;
+    --blue-accent: #3A7BD5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0D0F14 0%, #1a1f2e 50%, #0D0F14 100%);
+    border-bottom: 1px solid var(--gold);
+    padding: 16px 20px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+  }
+  header p {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+  .trophy { font-size: 1.4rem; vertical-align: middle; margin-right: 6px; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 65px;
+    z-index: 99;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto;
+    padding: 12px 18px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab.active {
+    color: var(--gold-light);
+    border-bottom-color: var(--gold);
+  }
+
+  /* ROUND SECTION */
+  .round-section {
+    display: none;
+    padding: 16px 14px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .round-section.active { display: block; }
+
+  .round-header {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .round-header h2 {
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .round-header p {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* MATCH CARD */
+  .match-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .match-card:active { border-color: var(--gold); }
+
+  .match-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px 6px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+  .match-date {
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+  .match-venue {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-align: right;
+    max-width: 55%;
+    line-height: 1.2;
+  }
+
+  .match-body {
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .team {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .team.away { flex-direction: row-reverse; text-align: right; }
+
+  .flag { font-size: 1.6rem; flex-shrink: 0; line-height: 1; display:flex; align-items:center; }
+  .flag img, .flag-img { width:2rem; height:1.35rem; object-fit:cover; border-radius:3px; display:block; }
+  .bflag .flag-img, .bracket-team .flag-img { width:1.2rem; height:0.82rem; object-fit:cover; border-radius:2px; display:block; }
+  .team-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+  .team-name small {
+    display: block;
+    font-size: 0.64rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .team.winner .team-name { color: var(--gold-light); }
+
+  .score-area {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .score-box {
+    width: 38px;
+    height: 38px;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+  .score-box:active { background: var(--card-hover); border-color: var(--gold); }
+  .score-box.has-score { color: var(--gold-light); border-color: var(--gold); background: rgba(201,168,76,0.08); }
+  .score-sep {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* PENALTIES */
+  .penalties {
+    padding: 4px 14px 10px;
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-align: center;
+    display: none;
+  }
+  .penalties.visible { display: block; }
+  .pen-score { color: var(--gold); font-weight: 600; }
+
+  /* SCORE MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 500px;
+    padding: 24px 20px 36px;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-title {
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .modal-teams {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .modal-teams .flags { font-size: 1.3rem; margin: 0 6px; }
+
+  .score-input-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .score-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .numpad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .num-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 14px 8px;
+    cursor: pointer;
+    transition: all 0.1s;
+    -webkit-tap-highlight-color: transparent;
+    text-align: center;
+  }
+  .num-btn:active { background: var(--card-hover); border-color: var(--gold); color: var(--gold-light); }
+  .num-btn.del { color: var(--muted); font-size: 1rem; }
+  .num-btn.clear-btn { color: var(--red); }
+
+  .modal-input-display {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    min-width: 70px;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-input-display.active { border-color: var(--gold); }
+
+  .pen-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .pen-section.visible { display: block; }
+  .pen-title {
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+  }
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-cancel { background: var(--card); color: var(--muted); border: 1px solid var(--border); }
+  .btn-save { background: var(--gold); color: var(--dark); }
+  .btn-save:active { background: var(--gold-light); }
+  .btn-cancel:active { background: var(--card-hover); }
+  .btn-clear { background: rgba(231,76,60,0.15); color: var(--red); border: 1px solid rgba(231,76,60,0.3); }
+
+  /* BRACKET VIEW */
+  .bracket-scroll {
+    overflow-x: auto;
+    padding: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .bracket-grid {
+    display: flex;
+    gap: 0;
+    min-width: 900px;
+  }
+  .bracket-round {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .bracket-round-title {
+    text-align: center;
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    padding: 8px 4px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .bracket-slots {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 6px;
+    padding: 0 4px;
+  }
+  .bracket-match {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    flex: 1;
+    max-height: 68px;
+  }
+  .bracket-match:active { border-color: var(--gold); }
+  .bracket-team {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    line-height: 1;
+  }
+  .bracket-team:last-child { border-bottom: none; }
+  .bracket-team .bflag { font-size: 0.9rem; display:flex; align-items:center; }
+  .bracket-team .bflag img { width:1.1rem; height:0.75rem; object-fit:cover; border-radius:2px; }
+  .bracket-team .bscore {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 14px;
+    text-align: right;
+  }
+  .bracket-team.winner { background: rgba(201,168,76,0.08); color: var(--gold-light); }
+  .bracket-team.winner .bscore { color: var(--gold-light); }
+
+  .connector-col {
+    width: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    position: relative;
+  }
+
+  /* FINAL CARD */
+  .final-card {
+    background: linear-gradient(135deg, rgba(201,168,76,0.12) 0%, rgba(13,15,20,0) 100%);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    margin: 20px auto;
+    max-width: 320px;
+    overflow: hidden;
+  }
+  .final-title-bar {
+    background: var(--gold);
+    text-align: center;
+    padding: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--dark);
+  }
+
+  /* CHAMPION CARD */
+  .champion-card {
+    background: linear-gradient(135deg, rgba(201,168,76,0.2) 0%, rgba(13,15,20,0) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    margin: 20px auto;
+    max-width: 280px;
+  }
+  .champion-label {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .champion-flag { font-size: 3rem; margin-bottom: 8px; }
+  .champion-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gold-light);
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap {
+    background: var(--surface);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .progress-label { font-size: 0.68rem; color: var(--muted); white-space: nowrap; }
+  .progress-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
+  .progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.4s ease; }
+  .progress-count { font-size: 0.68rem; color: var(--gold); font-weight: 600; white-space: nowrap; }
+
+  .editing-label {
+    font-size: 0.7rem;
+    color: var(--gold);
+    background: rgba(201,168,76,0.1);
+    border-radius: 4px;
+    padding: 2px 8px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="trophy">🏆</span> Coupe du Monde 2026</h1>
+  <p>Phase Éliminatoire · 28 juin – 19 juillet</p>
+</header>
+
+<div class="progress-bar-wrap">
+  <span class="progress-label">Matchs remplis</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <span class="progress-count" id="progressCount">0/63</span>
+</div>
+
+<div class="tabs" id="tabsBar">
+  <div class="tab active" data-tab="r16" onclick="switchTab('r16')">16e de finale</div>
+  <div class="tab" data-tab="r8" onclick="switchTab('r8')">8e de finale</div>
+  <div class="tab" data-tab="qf" onclick="switchTab('qf')">Quarts</div>
+  <div class="tab" data-tab="sf" onclick="switchTab('sf')">Demi-finales</div>
+  <div class="tab" data-tab="final" onclick="switchTab('final')">Finale</div>
+  <div class="tab" data-tab="bracket" onclick="switchTab('bracket')">Tableau</div>
+</div>
+
+<div id="r16" class="round-section active"></div>
+<div id="r8" class="round-section"></div>
+<div id="qf" class="round-section"></div>
+<div id="sf" class="round-section"></div>
+<div id="final" class="round-section"></div>
+<div id="bracket" class="round-section"></div>
+
+<!-- SCORE MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-title">Saisir le score</div>
+    <div class="modal-teams" id="modalTeams"></div>
+    <div class="score-input-row">
+      <div>
+        <div class="score-label" id="labelHome"></div>
+        <div class="modal-input-display" id="displayHome" onclick="setActive('home')">–</div>
+      </div>
+      <div style="font-size:1.5rem; color:var(--muted); padding-top:22px;">–</div>
+      <div>
+        <div class="score-label" id="labelAway"></div>
+        <div class="modal-input-display" id="displayAway" onclick="setActive('away')">–</div>
+      </div>
+    </div>
+
+    <div class="numpad">
+      <button class="num-btn" onclick="numPress('1')">1</button>
+      <button class="num-btn" onclick="numPress('2')">2</button>
+      <button class="num-btn" onclick="numPress('3')">3</button>
+      <button class="num-btn del" onclick="numDel()">⌫</button>
+      <button class="num-btn" onclick="numPress('4')">4</button>
+      <button class="num-btn" onclick="numPress('5')">5</button>
+      <button class="num-btn" onclick="numPress('6')">6</button>
+      <button class="num-btn" onclick="numPress('7')">7</button>
+      <button class="num-btn" onclick="numPress('8')">8</button>
+      <button class="num-btn" onclick="numPress('9')">9</button>
+      <button class="num-btn" onclick="numPress('0')">0</button>
+      <button class="num-btn clear-btn" onclick="numClear()">C</button>
+    </div>
+
+    <div class="pen-section" id="penSection">
+      <div class="pen-title">⚽ Tirs au but</div>
+      <div class="score-input-row">
+        <div>
+          <div class="score-label" id="penLabelHome"></div>
+          <div class="modal-input-display" id="displayPenHome" onclick="setActive('penHome')" style="font-size:1.4rem">–</div>
+        </div>
+        <div style="font-size:1.2rem; color:var(--muted); padding-top:22px;">–</div>
+        <div>
+          <div class="score-label" id="penLabelAway"></div>
+          <div class="modal-input-display" id="displayPenAway" onclick="setActive('penAway')" style="font-size:1.4rem">–</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-clear" onclick="clearScore()">Effacer</button>
+      <button class="btn btn-save" onclick="saveScore()">Valider ✓</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+// Drapeaux via twemoji CDN (images SVG fiables)
+const FLAG_CODES = {
+  'Afrique du Sud':'za','Canada':'ca','Brésil':'br','Japon':'jp',
+  'Allemagne':'de','Pays-Bas':'nl','Maroc':'ma',
+  "Côte d'Ivoire":'ci','Norvège':'no','France':'fr',
+  'Mexique':'mx','Angleterre':'gb-eng','Paraguay':'py',
+  'Belgique':'be','États-Unis':'us','Sénégal':'sn',
+  'Argentine':'ar','Cap-Vert':'cv','Espagne':'es','Autriche':'at',
+  'Suisse':'ch','Colombie':'co','Portugal':'pt','Croatie':'hr',
+  'Australie':'au','Égypte':'eg','Algérie':'dz',
+  'Suède':'se','Équateur':'ec','Congo RD':'cd','Bosnie-Herzégovine':'ba','Ghana':'gh',
+  'TBD':'xx'
+};
+
+function flag(name) {
+  const code = FLAG_CODES[name];
+  if (!code || code === 'xx') return '<span style="font-size:1.1rem">❓</span>';
+  return `<img src="https://flagcdn.com/w40/${code}.png" class="flag-img" onerror="this.style.display='none'">`;
+}
+
+// Matches data - stored as: { home, away, scoreHome, scoreAway, penHome, penAway, date, venue, matchId, round }
+let matches = {
+  // 16ES DE FINALE
+  m73: { home:'Afrique du Sud', away:'Canada', date:'28 juin · 21h00', venue:'SoFi Stadium, Inglewood', round:'r16', scoreHome:null, scoreAway:null },
+  m74: { home:'Brésil', away:'Japon', date:'29 juin · 19h00', venue:'NRG Stadium, Houston', round:'r16', scoreHome:null, scoreAway:null },
+  m75: { home:'Allemagne', away:'Paraguay', date:'29 juin · 22h30', venue:'Gillette Stadium, Foxborough', round:'r16', scoreHome:null, scoreAway:null },
+  m76: { home:'Pays-Bas', away:'Maroc', date:'30 juin · 03h00', venue:'Estadio BBVA, Monterrey', round:'r16', scoreHome:null, scoreAway:null },
+  m77: { home:"Côte d'Ivoire", away:'Norvège', date:'30 juin · 19h00', venue:'AT&T Stadium, Arlington', round:'r16', scoreHome:null, scoreAway:null },
+  m78: { home:'France', away:'Suède', date:'30 juin · 23h00', venue:'MetLife Stadium, East Rutherford', round:'r16', scoreHome:null, scoreAway:null },
+  m79: { home:'Mexique', away:'Équateur', date:'1 juil. · 03h00', venue:'Estadio Azteca, Mexico City', round:'r16', scoreHome:null, scoreAway:null },
+  m80: { home:'Angleterre', away:'Congo RD', date:'1 juil. · 18h00', venue:'Mercedes-Benz Stadium, Atlanta', round:'r16', scoreHome:null, scoreAway:null },
+  m81: { home:'Belgique', away:'Sénégal', date:'1 juil. · 22h00', venue:'Lumen Field, Seattle', round:'r16', scoreHome:null, scoreAway:null },
+  m82: { home:'États-Unis', away:'Bosnie-Herzégovine', date:'2 juil. · 02h00', venue:"Levi's Stadium, Santa Clara", round:'r16', scoreHome:null, scoreAway:null },
+  m83: { home:'Argentine', away:'Cap-Vert', date:'4 juil. · 00h00', venue:'Hard Rock Stadium, Miami Gardens', round:'r16', scoreHome:null, scoreAway:null },
+  m84: { home:'Espagne', away:'Autriche', date:'2 juil. · 21h00', venue:'SoFi Stadium, Inglewood', round:'r16', scoreHome:null, scoreAway:null },
+  m85: { home:'Suisse', away:'Algérie', date:'3 juil. · 05h00', venue:'BC Place, Vancouver', round:'r16', scoreHome:null, scoreAway:null },
+  m86: { home:'Colombie', away:'Ghana', date:'4 juil. · 03h30', venue:'Arrowhead Stadium, Kansas City', round:'r16', scoreHome:null, scoreAway:null },
+  m87: { home:'Portugal', away:'Croatie', date:'3 juil. · 01h00', venue:'BMO Field, Toronto', round:'r16', scoreHome:null, scoreAway:null },
+  m88: { home:'Australie', away:'Égypte', date:'3 juil. · 20h00', venue:'AT&T Stadium, Arlington', round:'r16', scoreHome:null, scoreAway:null },
+
+  // 8ES DE FINALE
+  m89: { home:'TBD', away:'TBD', date:'5 juil.', venue:'Miami', round:'r8', scoreHome:null, scoreAway:null },
+  m90: { home:'TBD', away:'TBD', date:'5 juil.', venue:'Dallas', round:'r8', scoreHome:null, scoreAway:null },
+  m91: { home:'TBD', away:'TBD', date:'6 juil.', venue:'Atlanta', round:'r8', scoreHome:null, scoreAway:null },
+  m92: { home:'TBD', away:'TBD', date:'6 juil.', venue:'Los Angeles', round:'r8', scoreHome:null, scoreAway:null },
+  m93: { home:'TBD', away:'TBD', date:'7 juil.', venue:'New York', round:'r8', scoreHome:null, scoreAway:null },
+  m94: { home:'TBD', away:'TBD', date:'7 juil.', venue:'Houston', round:'r8', scoreHome:null, scoreAway:null },
+  m95: { home:'TBD', away:'TBD', date:'8 juil.', venue:'Kansas City', round:'r8', scoreHome:null, scoreAway:null },
+  m96: { home:'TBD', away:'TBD', date:'8 juil.', venue:'Seattle', round:'r8', scoreHome:null, scoreAway:null },
+
+  // QUARTER-FINALS
+  m97: { home:'TBD', away:'TBD', date:'11 juil.', venue:'Boston', round:'qf', scoreHome:null, scoreAway:null },
+  m98: { home:'TBD', away:'TBD', date:'11 juil.', venue:'Los Angeles', round:'qf', scoreHome:null, scoreAway:null },
+  m99: { home:'TBD', away:'TBD', date:'12 juil.', venue:'Miami', round:'qf', scoreHome:null, scoreAway:null },
+  m100: { home:'TBD', away:'TBD', date:'12 juil.', venue:'Kansas City', round:'qf', scoreHome:null, scoreAway:null },
+
+  // SEMI-FINALS
+  m101: { home:'TBD', away:'TBD', date:'15 juil.', venue:'Dallas', round:'sf', scoreHome:null, scoreAway:null },
+  m102: { home:'TBD', away:'TBD', date:'16 juil.', venue:'Atlanta', round:'sf', scoreHome:null, scoreAway:null },
+
+  // 3RD PLACE
+  m103: { home:'TBD', away:'TBD', date:'19 juil.', venue:'Miami', round:'final', scoreHome:null, scoreAway:null, is3rd:true },
+
+  // FINAL
+  m104: { home:'TBD', away:'TBD', date:'19 juil.', venue:'MetLife Stadium, New York', round:'final', scoreHome:null, scoreAway:null },
+};
+
+// Load from localStorage
+function loadData() {
+  try {
+    const saved = localStorage.getItem('wc2026_scores');
+    if (saved) {
+      const data = JSON.parse(saved);
+      Object.keys(data).forEach(id => {
+        if (matches[id]) {
+          Object.assign(matches[id], data[id]);
+        }
+      });
+    }
+  } catch(e) {}
+}
+
+function saveData() {
+  try {
+    const toSave = {};
+    Object.keys(matches).forEach(id => {
+      toSave[id] = {
+        scoreHome: matches[id].scoreHome,
+        scoreAway: matches[id].scoreAway,
+        penHome: matches[id].penHome,
+        penAway: matches[id].penAway,
+        home: matches[id].home,
+        away: matches[id].away,
+      };
+    });
+    localStorage.setItem('wc2026_scores', JSON.stringify(toSave));
+  } catch(e) {}
+}
+
+// ===== RENDER =====
+function renderRound(roundId, title, subtitle, matchIds) {
+  const section = document.getElementById(roundId);
+  section.innerHTML = `
+    <div class="round-header">
+      <h2>${title}</h2>
+      <p>${subtitle}</p>
+    </div>
+  `;
+  matchIds.forEach(id => {
+    section.appendChild(createMatchCard(id));
+  });
+}
+
+function createMatchCard(id) {
+  const m = matches[id];
+  const hasScore = m.scoreHome !== null && m.scoreAway !== null;
+  const isEqual = hasScore && m.scoreHome === m.scoreAway;
+  const homeWins = hasScore && !isEqual && m.scoreHome > m.scoreAway;
+  const awayWins = hasScore && !isEqual && m.scoreAway > m.scoreHome;
+  const hasPen = m.penHome !== null && m.penAway !== null;
+  const penHomeWins = hasPen && m.penHome > m.penAway;
+
+  const div = document.createElement('div');
+  div.className = 'match-card';
+  div.id = 'card_' + id;
+
+  const winnerHome = homeWins || (isEqual && penHomeWins);
+  const winnerAway = awayWins || (isEqual && !penHomeWins && hasPen);
+
+  div.innerHTML = `
+    <div class="match-meta">
+      <span class="match-date">📅 ${m.date}</span>
+      <span class="match-venue">${m.venue}</span>
+    </div>
+    <div class="match-body" onclick="openModal('${id}')">
+      <div class="team home ${winnerHome ? 'winner' : ''}">
+        <span class="flag">${flag(m.home)}</span>
+        <span class="team-name">${m.home}</span>
+      </div>
+      <div class="score-area">
+        <div class="score-box ${m.scoreHome !== null ? 'has-score' : ''}">${m.scoreHome !== null ? m.scoreHome : '?'}</div>
+        <span class="score-sep">–</span>
+        <div class="score-box ${m.scoreAway !== null ? 'has-score' : ''}">${m.scoreAway !== null ? m.scoreAway : '?'}</div>
+      </div>
+      <div class="team away ${winnerAway ? 'winner' : ''}">
+        <span class="team-name">${m.away}</span>
+        <span class="flag">${flag(m.away)}</span>
+      </div>
+    </div>
+    <div class="penalties ${hasPen ? 'visible' : ''}">
+      ⚽ Tirs au but : <span class="pen-score">${m.home} ${m.penHome ?? '?'} – ${m.penAway ?? '?'} ${m.away}</span>
+    </div>
+  `;
+  return div;
+}
+
+function refreshCard(id) {
+  const old = document.getElementById('card_' + id);
+  if (old) {
+    const newCard = createMatchCard(id);
+    old.replaceWith(newCard);
+  }
+}
+
+function renderAll() {
+  renderRound('r16', '16es de Finale', '28 juin – 4 juillet 2026', 
+    ['m73','m74','m75','m76','m77','m78','m79','m80','m81','m82','m83','m84','m85','m86','m87','m88']);
+  renderRound('r8', '8es de Finale', '5 – 8 juillet 2026',
+    ['m89','m90','m91','m92','m93','m94','m95','m96']);
+  renderRound('qf', 'Quarts de Finale', '11 – 12 juillet 2026',
+    ['m97','m98','m99','m100']);
+  renderRound('sf', 'Demi-finales', '15 – 16 juillet 2026',
+    ['m101','m102']);
+
+  // Final section
+  const finalSection = document.getElementById('final');
+  finalSection.innerHTML = `
+    <div class="round-header">
+      <h2>Finale & Petite Finale</h2>
+      <p>19 juillet 2026 · MetLife Stadium, New York</p>
+    </div>
+  `;
+  const p3card = document.createElement('div');
+  p3card.innerHTML = `<div style="text-align:center;font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:600;">🥉 Match pour la 3ème place</div>`;
+  finalSection.appendChild(p3card);
+  finalSection.appendChild(createMatchCard('m103'));
+
+  const spacer = document.createElement('div');
+  spacer.style.cssText = 'height:1px;background:var(--border);margin:20px 0;';
+  finalSection.appendChild(spacer);
+
+  const fTitle = document.createElement('div');
+  fTitle.innerHTML = `<div class="final-card"><div class="final-title-bar">🏆 GRANDE FINALE</div>`;
+  const fMatch = createMatchCard('m104');
+  fMatch.style.border = 'none';
+  fMatch.style.borderRadius = '0 0 12px 12px';
+  const finalWrapper = document.createElement('div');
+  finalWrapper.className = 'final-card';
+  finalWrapper.innerHTML = `<div class="final-title-bar">🏆 GRANDE FINALE · 19 Juillet</div>`;
+  finalWrapper.appendChild(createMatchCard('m104'));
+  finalSection.appendChild(finalWrapper);
+
+  // Champion
+  const m = matches['m104'];
+  if (m.scoreHome !== null && m.scoreAway !== null) {
+    const hasPen = m.penHome !== null && m.penAway !== null;
+    const homeWins = m.scoreHome > m.scoreAway || (m.scoreHome === m.scoreAway && hasPen && m.penHome > m.penAway);
+    const champion = homeWins ? m.home : m.away;
+    if (champion !== 'TBD') {
+      const champDiv = document.createElement('div');
+      champDiv.className = 'champion-card';
+      champDiv.innerHTML = `
+        <div class="champion-label">🏆 Champion du Monde</div>
+        <div class="champion-flag">${flag(champion)}</div>
+        <div class="champion-name">${champion}</div>
+      `;
+      finalSection.appendChild(champDiv);
+    }
+  }
+
+  renderBracket();
+  updateProgress();
+}
+
+function renderBracket() {
+  const section = document.getElementById('bracket');
+  section.innerHTML = `
+    <div class="round-header">
+      <h2>Tableau Général</h2>
+      <p>Vue d'ensemble de toutes les phases</p>
+    </div>
+    <div class="bracket-scroll">
+      <div class="bracket-grid">
+        ${renderBracketRound('16es', ['m73','m74','m75','m76','m77','m78','m79','m80'], 8)}
+        ${renderBracketRound('8es', ['m89','m90','m91','m92'], 4)}
+        ${renderBracketRound('Quarts', ['m97','m98'], 2)}
+        ${renderBracketRound('Demies', ['m101'], 1)}
+        ${renderBracketRound('Finale', ['m104'], 1)}
+      </div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="bracket-scroll" style="border-top:1px solid var(--border);padding-top:16px;">
+      <div class="bracket-grid">
+        ${renderBracketRound('16es', ['m81','m82','m83','m84','m85','m86','m87','m88'], 8)}
+        ${renderBracketRound('8es', ['m93','m94','m95','m96'], 4)}
+        ${renderBracketRound('Quarts', ['m99','m100'], 2)}
+        ${renderBracketRound('Demies', ['m102'], 1)}
+        ${renderBracketRound('3e place', ['m103'], 1)}
+      </div>
+    </div>
+  `;
+}
+
+function renderBracketRound(title, ids, count) {
+  const slots = ids.map(id => {
+    const m = matches[id];
+    const hasScore = m.scoreHome !== null && m.scoreAway !== null;
+    const hasPen = m.penHome !== null && m.penAway !== null;
+    const homeWins = hasScore && (m.scoreHome > m.scoreAway || (m.scoreHome === m.scoreAway && hasPen && m.penHome > m.penAway));
+    const awayWins = hasScore && !homeWins;
+    return `
+      <div class="bracket-match" onclick="openModal('${id}')">
+        <div class="bracket-team ${homeWins ? 'winner' : ''}">
+          <span class="bflag">${flag(m.home)}</span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.home === 'TBD' ? '?' : m.home.startsWith('Meilleur') ? '3e' : m.home.split(' ')[0]}</span>
+          <span class="bscore">${m.scoreHome !== null ? m.scoreHome : ''}</span>
+        </div>
+        <div class="bracket-team ${awayWins ? 'winner' : ''}">
+          <span class="bflag">${flag(m.away)}</span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.away === 'TBD' ? '?' : m.away.startsWith('Meilleur') ? '3e' : m.away.split(' ')[0]}</span>
+          <span class="bscore">${m.scoreAway !== null ? m.scoreAway : ''}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="bracket-round">
+      <div class="bracket-round-title">${title}</div>
+      <div class="bracket-slots">${slots}</div>
+    </div>
+  `;
+}
+
+// ===== PROGRESS =====
+function updateProgress() {
+  const total = Object.keys(matches).length;
+  const filled = Object.values(matches).filter(m => m.scoreHome !== null && m.scoreAway !== null).length;
+  const pct = Math.round((filled / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = filled + '/' + total;
+}
+
+// ===== TABS =====
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === id));
+  document.querySelectorAll('.round-section').forEach(s => s.classList.toggle('active', s.id === id));
+  if (id === 'bracket') renderBracket();
+}
+
+// ===== MODAL =====
+let currentMatchId = null;
+let activeField = 'home';
+let tempScores = {};
+
+function openModal(id) {
+  currentMatchId = id;
+  const m = matches[id];
+  activeField = 'home';
+
+  tempScores = {
+    home: m.scoreHome !== null ? String(m.scoreHome) : '',
+    away: m.scoreAway !== null ? String(m.scoreAway) : '',
+    penHome: m.penHome !== null ? String(m.penHome) : '',
+    penAway: m.penAway !== null ? String(m.penAway) : '',
+  };
+
+  document.getElementById('modalTeams').innerHTML = 
+    `<span class="flags">${flag(m.home)}</span> ${m.home} <span style="color:var(--muted)">vs</span> ${m.away} <span class="flags">${flag(m.away)}</span>`;
+  document.getElementById('labelHome').textContent = m.home === 'TBD' ? 'Équipe 1' : m.home;
+  document.getElementById('labelAway').textContent = m.away === 'TBD' ? 'Équipe 2' : m.away;
+  document.getElementById('penLabelHome').textContent = m.home === 'TBD' ? 'Équipe 1' : m.home;
+  document.getElementById('penLabelAway').textContent = m.away === 'TBD' ? 'Équipe 2' : m.away;
+
+  updateDisplays();
+  setActive('home');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  currentMatchId = null;
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function setActive(field) {
+  activeField = field;
+  ['displayHome','displayAway','displayPenHome','displayPenAway'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  const map = { home:'displayHome', away:'displayAway', penHome:'displayPenHome', penAway:'displayPenAway' };
+  if (map[field]) document.getElementById(map[field]).classList.add('active');
+}
+
+function numPress(n) {
+  if (tempScores[activeField] === undefined) return;
+  if (tempScores[activeField].length < 2) {
+    tempScores[activeField] += n;
+  }
+  updateDisplays();
+}
+
+function numDel() {
+  if (tempScores[activeField] === undefined) return;
+  tempScores[activeField] = tempScores[activeField].slice(0, -1);
+  updateDisplays();
+}
+
+function numClear() {
+  if (tempScores[activeField] !== undefined) tempScores[activeField] = '';
+  updateDisplays();
+}
+
+function updateDisplays() {
+  const val = f => f === '' ? '–' : f;
+  document.getElementById('displayHome').textContent = val(tempScores.home);
+  document.getElementById('displayAway').textContent = val(tempScores.away);
+  document.getElementById('displayPenHome').textContent = val(tempScores.penHome);
+  document.getElementById('displayPenAway').textContent = val(tempScores.penAway);
+
+  // Show penalties section if draw
+  const pen = document.getElementById('penSection');
+  const h = parseInt(tempScores.home);
+  const a = parseInt(tempScores.away);
+  if (!isNaN(h) && !isNaN(a) && h === a) {
+    pen.classList.add('visible');
+  } else {
+    pen.classList.remove('visible');
+    tempScores.penHome = '';
+    tempScores.penAway = '';
+    document.getElementById('displayPenHome').textContent = '–';
+    document.getElementById('displayPenAway').textContent = '–';
+  }
+}
+
+// ===== BRACKET PROGRESSION =====
+// Pour chaque match : [matchSuivant, position ('home'|'away')]
+// 16es → 8es
+// m73 vs m74 → m89 home/away
+// m75 vs m76 → m90 home/away
+// m77 vs m78 → m91 home/away
+// m79 vs m80 → m92 home/away
+// m81 vs m82 → m93 home/away
+// m83 vs m84 → m94 home/away
+// m85 vs m86 → m95 home/away
+// m87 vs m88 → m96 home/away
+// 8es → Quarts
+// m89 vs m90 → m97 home/away
+// m91 vs m92 → m98 home/away
+// m93 vs m94 → m99 home/away
+// m95 vs m96 → m100 home/away
+// Quarts → Demies
+// m97 vs m98 → m101 home/away
+// m99 vs m100 → m102 home/away
+// Demies → Finale / 3e place
+// m101 winner → m104 home | m101 loser → m103 home
+// m102 winner → m104 away | m102 loser → m103 away
+
+const NEXT_MATCH = {
+  m73: ['m89','home'], m74: ['m89','away'],
+  m75: ['m90','home'], m76: ['m90','away'],
+  m77: ['m91','home'], m78: ['m91','away'],
+  m79: ['m92','home'], m80: ['m92','away'],
+  m81: ['m93','home'], m82: ['m93','away'],
+  m83: ['m94','home'], m84: ['m94','away'],
+  m85: ['m95','home'], m86: ['m95','away'],
+  m87: ['m96','home'], m88: ['m96','away'],
+  m89: ['m97','home'], m90: ['m97','away'],
+  m91: ['m98','home'], m92: ['m98','away'],
+  m93: ['m99','home'], m94: ['m99','away'],
+  m95: ['m100','home'],m96: ['m100','away'],
+  m97: ['m101','home'],m98: ['m101','away'],
+  m99: ['m102','home'],m100: ['m102','away'],
+};
+// Matchs de demi-finales : le vainqueur va en finale, le perdant en 3e place
+const SF_MATCHES = { m101: ['m104','m103'], m102: ['m104','m103'] };
+const SF_POSITIONS = { m101: 'home', m102: 'away' };
+
+function getWinner(id) {
+  const m = matches[id];
+  if (m.scoreHome === null || m.scoreAway === null) return null;
+  if (m.scoreHome > m.scoreAway) return m.home;
+  if (m.scoreAway > m.scoreHome) return m.away;
+  // égalité → tirs au but
+  if (m.penHome !== null && m.penAway !== null) {
+    return m.penHome > m.penAway ? m.home : m.away;
+  }
+  return null;
+}
+
+function getLoser(id) {
+  const winner = getWinner(id);
+  if (!winner) return null;
+  const m = matches[id];
+  return winner === m.home ? m.away : m.home;
+}
+
+function propagateWinner(id) {
+  const winner = getWinner(id);
+
+  // Demi-finales : propager vers finale ET 3e place
+  if (SF_MATCHES[id]) {
+    const pos = SF_POSITIONS[id];
+    const loser = getLoser(id);
+    // Finale
+    matches['m104'][pos] = winner || 'TBD';
+    // 3e place
+    matches['m103'][pos] = loser || 'TBD';
+    refreshCard('m104');
+    refreshCard('m103');
+    return;
+  }
+
+  // Autres rounds
+  if (NEXT_MATCH[id]) {
+    const [nextId, pos] = NEXT_MATCH[id];
+    // Si on efface le score, remettre TBD dans le match suivant (et effacer en cascade)
+    matches[nextId][pos] = winner || 'TBD';
+    // Si le match suivant avait un score, on l'efface car l'équipe a changé
+    if (winner === null || matches[nextId].home === 'TBD' || matches[nextId].away === 'TBD') {
+      if (matches[nextId].scoreHome !== null || matches[nextId].scoreAway !== null) {
+        matches[nextId].scoreHome = null;
+        matches[nextId].scoreAway = null;
+        matches[nextId].penHome = null;
+        matches[nextId].penAway = null;
+        propagateWinner(nextId); // cascade
+      }
+    }
+    refreshCard(nextId);
+  }
+}
+
+function saveScore() {
+  if (!currentMatchId) return;
+  const h = parseInt(tempScores.home);
+  const a = parseInt(tempScores.away);
+  if (isNaN(h) || isNaN(a)) { closeModal(); return; }
+
+  matches[currentMatchId].scoreHome = h;
+  matches[currentMatchId].scoreAway = a;
+
+  if (h === a) {
+    const ph = parseInt(tempScores.penHome);
+    const pa = parseInt(tempScores.penAway);
+    matches[currentMatchId].penHome = isNaN(ph) ? null : ph;
+    matches[currentMatchId].penAway = isNaN(pa) ? null : pa;
+  } else {
+    matches[currentMatchId].penHome = null;
+    matches[currentMatchId].penAway = null;
+  }
+
+  propagateWinner(currentMatchId);
+  saveData();
+  refreshCard(currentMatchId);
+  if (document.getElementById('bracket').classList.contains('active')) renderBracket();
+  updateProgress();
+
+  // Re-render final si besoin
+  if (matches[currentMatchId].round === 'final') {
+    renderAll();
+  }
+  closeModal();
+}
+
+function clearScore() {
+  if (!currentMatchId) return;
+  matches[currentMatchId].scoreHome = null;
+  matches[currentMatchId].scoreAway = null;
+  matches[currentMatchId].penHome = null;
+  matches[currentMatchId].penAway = null;
+  propagateWinner(currentMatchId);
+  saveData();
+  refreshCard(currentMatchId);
+  if (document.getElementById('bracket').classList.contains('active')) renderBracket();
+  updateProgress();
+  closeModal();
+}
+
+function propagateAll() {
+  // Rejouer la propagation pour tous les matchs dans l'ordre
+  const order = ['m73','m74','m75','m76','m77','m78','m79','m80',
+                 'm81','m82','m83','m84','m85','m86','m87','m88',
+                 'm89','m90','m91','m92','m93','m94','m95','m96',
+                 'm97','m98','m99','m100','m101','m102'];
+  order.forEach(id => {
+    if (matches[id].scoreHome !== null && matches[id].scoreAway !== null) {
+      propagateWinner(id);
+    }
+  });
+}
+
+// ===== INIT =====
+loadData();
+propagateAll();
+renderAll();
+</script>
+</body>
+</html>
